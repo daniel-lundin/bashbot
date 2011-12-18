@@ -5,12 +5,8 @@
 # NOTE: $REPLY holds the last received data from read
 # ---------------------------------------------------
 
-HOST=irc.quakenet.org
-PORT=6667
-NAME=bingoman
-NICK=bingoman
-
-LOGFILE="bashbot.log"
+# read settings from settings.sh
+. ./settings.sh
 
 function log {
     echo $1 >> $LOGFILE
@@ -47,6 +43,18 @@ function handle_msg {
     join_if_connected
     handle_privmsg
 }
+
+control_c()
+{
+    log "\n*** Keyboard interrupt, exiting ***\n"
+    # Close socket
+    exec 3>&- 
+    echo "*** Bye bye ***"
+    exit $?
+}
+
+trap control_c SIGINT
+
 if ! exec 3<> /dev/tcp/$HOST/$PORT; then
     echo "ERROR CONNECTING"
     exit 1
@@ -58,12 +66,7 @@ exec 1<&3
 exec 0>&3
 
 echo "NICK $NICK" | tee -a $LOGFILE
-read
-pong_if_needed
-
 echo "USER $NAME * * :$NAME" | tee -a $LOGFILE
-read
-pong_if_needed
 
 # main loop
 while read; do

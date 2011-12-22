@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo $1
+#echo $1
 for word in $1; do
     url=`echo $word | grep "\."`
     if [[ $url != "" ]]; then

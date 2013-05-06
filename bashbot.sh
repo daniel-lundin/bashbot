@@ -14,6 +14,7 @@ function handle_msg {
     pong_if_needed
     join_if_connected
     handle_privmsg
+    ctcp_version
 }
 
 control_c() {
@@ -31,7 +32,7 @@ if ! exec 3<> /dev/tcp/$HOST/$PORT; then
     exit 1
 fi
 
-# redict stdin/stdout to socket
+# Redirect stdin/stdout to socket
 log "Redirecting stdin/stdout"
 exec 1<&3
 exec 0>&3
@@ -42,5 +43,5 @@ echo "USER $NAME * * :$NAME" | tee -a $LOGFILE
 # main loop
 while read; do
     handle_msg
+    log "$REPLY"
 done;
-
